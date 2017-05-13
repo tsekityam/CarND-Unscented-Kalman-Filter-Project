@@ -48,10 +48,27 @@ UKF::UKF() {
   /**
   TODO:
 
-  Complete the initialization. See ukf.h for other member properties.
-
   Hint: one or more values initialized above might be wildly off...
   */
+
+  //set state dimension
+  int n_x_ = 5;
+
+  //set augmented dimension
+  int n_aug_ = 7;
+
+  //define spreading parameter
+  double lambda_ = 3 - n_aug;
+
+  //set vector for weights
+  weights_ = VectorXd(2*n_aug_+1);
+  double weight_0 = lambda/(lambda+n_aug_);
+  weights_(0) = weight_0;
+  for (int i=1; i<2*n_aug_+1; i++) {  //2n+1 weights
+    double weight = 0.5/(n_aug_+lambda);
+    weights_(i) = weight;
+  }
+
 }
 
 UKF::~UKF() {}
