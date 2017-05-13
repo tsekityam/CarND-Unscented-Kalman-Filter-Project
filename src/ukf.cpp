@@ -91,20 +91,35 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   */
 
   if (is_initialized_) {
+    //create augmented mean vector
+    VectorXd x_aug = VectorXd(n_aug_);
+
+    //create augmented state covariance
+    MatrixXd P_aug = MatrixXd(n_aug_, n_aug_);
+
     //create sigma point matrix
-    MatrixXd Xsig = MatrixXd(n_x_, 2 * n_x_ + 1);
+    MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
 
-    //calculate square root of P
-    MatrixXd A = P_.llt().matrixL();
+    //create augmented mean state
+    x_aug.head(5) = x_;
+    x_aug(5) = 0;
+    x_aug(6) = 0;
 
-    //set first column of sigma point matrix
-    Xsig.col(0)  = x_;
+    //create augmented covariance matrix
+    P_aug.fill(0.0);
+    P_aug.topLeftCorner(5,5) = P_;
+    P_aug(5,5) = std_a_*std_a_;
+    P_aug(6,6) = std_yawdd_*std_yawdd_;
 
-    //set remaining sigma points
-    for (int i = 0; i < n_x_; i++)
+    //create square root matrix
+    MatrixXd L = P_aug.llt().matrixL();
+
+    //create augmented sigma points
+    Xsig_aug.col(0)  = x_aug;
+    for (int i = 0; i< n_aug_; i++)
     {
-      Xsig.col(i+1)     = x_ + sqrt(lambda_+n_x_) * A.col(i);
-      Xsig.col(i+1+n_x_) = x_ - sqrt(lambda_+n_x_) * A.col(i);
+      Xsig_aug.col(i+1)       = x_aug + sqrt(lambda_+n_aug_) * L.col(i);
+      Xsig_aug.col(i+1+n_aug_) = x_aug - sqrt(lambda_+n_aug_) * L.col(i);
     }
 
   } else {
