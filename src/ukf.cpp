@@ -57,13 +57,13 @@ UKF::UKF() {
   */
 
   //set state dimension
-  int n_x_ = 5;
+  n_x_ = 5;
 
   //set augmented dimension
-  int n_aug_ = 7;
+  n_aug_ = 7;
 
   //define spreading parameter
-  double lambda_ = 3 - n_aug_;
+  lambda_ = 3 - n_aug_;
 
   //set vector for weights
   weights_ = VectorXd(2*n_aug_+1);
