@@ -95,9 +95,11 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
     if (meas_package.sensor_type_ == MeasurementPackage::SensorType::LASER) {
       Prediction(delta_t);
       UpdateLidar(meas_package);
+      time_us_ = meas_package.timestamp_;
     } else if (meas_package.sensor_type_ == MeasurementPackage::SensorType::RADAR) {
       Prediction(delta_t);
       UpdateRadar(meas_package);
+      time_us_ = meas_package.timestamp_;
     }
   } else {
     double p_x = 0;
@@ -120,10 +122,9 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
     x_ << p_x, p_y, v, psi, psi_dot;
 
+    time_us_ = meas_package.timestamp_;
     is_initialized_ = true;
   }
-
-  time_us_ = meas_package.timestamp_;
 }
 
 /**
